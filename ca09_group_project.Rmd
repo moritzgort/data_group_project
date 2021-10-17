@@ -154,12 +154,12 @@ ggplot(listings) +
   geom_boxplot(aes(x=beds))
 
 listings_clean <- listings_clean %>% 
-  filter(bedrooms <= 2,
-         beds <= 2,
-         minimum_nights <= 4,
-         maximum_nights >= 4,
-         price <= 1500, # Everything above that would be extraordinarily expensive
-         accommodates >= 2)
+  filter(bedrooms < 3,
+         beds < 3,
+         minimum_nights < 5,
+         maximum_nights > 3,
+         price < 1500, # Everything above that would be extraordinarily expensive
+         accommodates > 1)
 
 ggplot(listings_clean) +
   geom_boxplot(aes(x=bedrooms))
@@ -223,7 +223,7 @@ listings_clean %>%
 
 listings_clean <- listings_clean %>%
   mutate(prop_type_simplified = case_when(
-    property_type %in% c("Entire rental unit","Private room in rental unit", "Entire residential home","Entire condominium (condo)") ~ property_type, 
+    property_type %in% c("Entire rental unit","Private room in rental unit", "Entire loft","Entire condominium (condo)") ~ property_type, 
     TRUE ~ "Other"
   ))
   
@@ -449,14 +449,14 @@ rmse_train <- listings_train %>%
   summarise(sqrt(sum(predictions - log(price_4_nights))**2/n())) %>% 
   pull()
 
-rmse_train # 0.2659918
+rmse_train # 0.05610197
 
 rmse_test <- listings_test %>% 
   mutate(predictions = predict(model5, .)) %>% 
   summarise(sqrt(sum(predictions - log(price_4_nights))**2/n())) %>% 
   pull()
 
-rmse_test # 0.1147128
+rmse_test # 0.2981508
 
 
 listings_specifications <- tibble(prop_type_simplified = "Private room in rental unit",
@@ -475,7 +475,7 @@ listings_specifications <- tibble(prop_type_simplified = "Private room in rental
 
 exp(predict(model5, newdata = listings_specifications, interval = "confidence"))
 
-# 95% CI for price for our specifications between $529.84 and $599.06 for our trip
+# 95% CI for price for our specifications between $408.71 and $752.64 for our trip
 
 
 ```
